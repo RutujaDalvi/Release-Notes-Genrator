@@ -1,0 +1,22 @@
+#!/bin/bash
+echo -e "Enter the repo link:"
+read repo
+git clone $repo
+echo -e "Enter the repo folder name"
+read dir
+cd $dir
+git pull
+echo "Enter the tag name from which the release has to be considered:"
+read tag
+count="$(git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[FEATURE\]" | wc -l)"
+echo "Feature $count" >> ../output.txt
+git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[FEATURE\]" >> ../output.txt
+count="$(git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[FIX\]" | wc -l)"
+echo "FIX $count" >> ../output.txt
+git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[FIX\]" >> ../output.txt
+count="$(git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[DOC\]" | wc -l)"
+echo "DOC $count" >> ../output.txt
+git log --pretty="%s" $tag..HEAD | grep -i -E "^.*\[DOC\]" >> ../output.txt
+cd ..
+python3 generate.py
+rm output.txt
